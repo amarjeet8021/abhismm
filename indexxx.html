@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main SMM Hub | Fast & Reliable SMM Services</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-slate-800 border-b border-slate-700 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigate('new-order')">
+        <div class="bg-blue-600 text-white font-black px-2.5 py-1 rounded-lg text-xl tracking-wider shadow">MSH</div>
+        <span class="font-bold text-lg hidden sm:inline text-white">Main SMM Hub</span>
+      </div>
+
+      <!-- User Info & Balance -->
+      <div id="user-header-info" class="flex items-center space-x-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-full px-3 py-1 flex items-center space-x-2 text-sm">
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          <span>Balance: <strong id="header-balance" class="text-emerald-400">₹0.00</strong></span>
+        </div>
+        <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md font-medium transition">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <div class="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row">
+
+    <!-- SIDEBAR / NAVIGATION -->
+    <aside id="app-sidebar" class="w-full md:w-64 bg-slate-800 border-r border-slate-700 p-4 space-y-1 hidden">
+      <div class="text-xs font-bold text-slate-400 px-3 uppercase tracking-wider mb-2">User Menu</div>
+      <nav class="space-y-1" id="nav-links">
+        <button onclick="navigate('new-order')" id="nav-new-order" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-blue-400 bg-blue-600/10">
+          <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+          <span>New Order</span>
+        </button>
+        <button onclick="navigate('services')" id="nav-services" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700">
+          <i data-lucide="list" class="w-4 h-4"></i>
+          <span>Services List</span>
+        </button>
+        <button onclick="navigate('orders')" id="nav-orders" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>Order History</span>
+        </button>
+        <button onclick="navigate('add-funds')" id="nav-add-funds" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700">
+          <i data-lucide="credit-card" class="w-4 h-4"></i>
+          <span>Add Funds</span>
+        </button>
+        <button onclick="navigate('api')" id="nav-api" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700">
+          <i data-lucide="code" class="w-4 h-4"></i>
+          <span>API Docs</span>
+        </button>
+        <button onclick="navigate('tickets')" id="nav-tickets" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-700">
+          <i data-lucide="life-buoy" class="w-4 h-4"></i>
+          <span>Support / Tickets</span>
+        </button>
+
+        <!-- ADMIN LINK (DYNAMIC) -->
+        <div id="admin-nav-container" class="pt-4 border-t border-slate-700 hidden">
+          <div class="text-xs font-bold text-purple-400 px-3 uppercase tracking-wider mb-2">Admin Panel</div>
+          <button onclick="navigate('admin')" id="nav-admin" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-purple-300 bg-purple-900/30 hover:bg-purple-900/50">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Admin Control Panel</span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+
+      <!-- AUTH CONTAINER (SIGN IN / SIGN UP) -->
+      <section id="view-auth" class="max-w-md mx-auto my-8 bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="flex border-b border-slate-700 mb-6">
+          <button id="tab-signin" onclick="switchAuthTab('signin')" class="flex-1 py-2 font-semibold text-center border-b-2 border-blue-500 text-blue-400">Sign In</button>
+          <button id="tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2 font-semibold text-center text-slate-400 border-b-2 border-transparent">Sign Up</button>
+        </div>
+
+        <!-- SIGN IN FORM -->
+        <form id="form-signin" onsubmit="handleSignIn(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Username / Mobile Number</label>
+            <input type="text" id="signin-id" required placeholder="Enter Username or Mobile" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Password</label>
+            <input type="password" id="signin-pass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition">
+            Sign In
+          </button>
+        </form>
+
+        <!-- SIGN UP FORM -->
+        <form id="form-signup" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Full Name</label>
+            <input type="text" id="signup-name" required placeholder="Enter Full Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Mobile / Username</label>
+            <input type="text" id="signup-id" required placeholder="Enter Mobile Number" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Password</label>
+            <input type="password" id="signup-pass" required placeholder="Create Password" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition">
+            Create Account
+          </button>
+        </form>
+      </section>
+
+      <!-- VIEW: NEW ORDER -->
+      <section id="view-new-order" class="space-y-6 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700 max-w-2xl mx-auto">
+          <h2 class="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+            <i data-lucide="shopping-bag" class="text-blue-500"></i>
+            <span>Place New Order</span>
+          </h2>
+
+          <form onsubmit="handlePlaceOrder(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Category</label>
+              <select id="order-category" onchange="updateServicesDropdown()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="tg-members">Telegram Members - 0% Drop</option>
+                <option value="tg-premium">Telegram Premium Members</option>
+                <option value="tg-views">Telegram Single/Auto Post Views</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Service</label>
+              <select id="order-service" onchange="calculateOrderCharge()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Link / Username</label>
+              <input type="text" id="order-link" required placeholder="https://t.me/yourchannel" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Quantity</label>
+              <input type="number" id="order-quantity" oninput="calculateOrderCharge()" placeholder="Min: 100" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+              <span id="quantity-hint" class="text-xs text-slate-400 mt-1 block">Min: 100 - Max: 220,000</span>
+            </div>
+
+            <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+              <span class="text-sm font-semibold text-slate-300">Total Charge:</span>
+              <span id="order-charge" class="text-lg font-extrabold text-blue-400">₹0.00</span>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition">
+              Submit Order
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW: SERVICES -->
+      <section id="view-services" class="space-y-4 hidden">
+        <div class="bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-700">
+          <h2 class="text-lg font-bold mb-3 text-white">Available Services Catalog</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="bg-slate-900 text-slate-400">
+                  <th class="p-2 border border-slate-700">ID</th>
+                  <th class="p-2 border border-slate-700">Service</th>
+                  <th class="p-2 border border-slate-700">Rate / 1000</th>
+                  <th class="p-2 border border-slate-700">Min</th>
+                  <th class="p-2 border border-slate-700">Max</th>
+                </tr>
+              </thead>
+              <tbody id="services-table-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ORDERS HISTORY -->
+      <section id="view-orders" class="space-y-4 hidden">
+        <div class="bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-700">
+          <h2 class="text-lg font-bold mb-3 text-white">Order History</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="bg-slate-900 text-slate-400">
+                  <th class="p-2 border border-slate-700">Order ID</th>
+                  <th class="p-2 border border-slate-700">Service</th>
+                  <th class="p-2 border border-slate-700">Link</th>
+                  <th class="p-2 border border-slate-700">Qty</th>
+                  <th class="p-2 border border-slate-700">Charge</th>
+                  <th class="p-2 border border-slate-700">Status</th>
+                </tr>
+              </thead>
+              <tbody id="orders-user-table-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ADD FUNDS -->
+      <section id="view-add-funds" class="space-y-6 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700 max-w-xl mx-auto">
+          <h2 class="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+            <i data-lucide="qr-code" class="text-emerald-400"></i>
+            <span>Add Funds via BharatPe / UPI</span>
+          </h2>
+
+          <div class="bg-slate-900 border border-emerald-500/30 p-4 rounded-xl text-center space-y-3 mb-6">
+            <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">BharatPe Merchant VPA</p>
+            <div class="flex items-center justify-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+              <code class="font-mono text-sm font-bold text-slate-200">BHARATPE2Y0G0R6C3V57831@unitype</code>
+              <button onclick="copyVpa()" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700">Copy</button>
+            </div>
+            <p class="text-xs text-slate-400">Scan using Paytm, PhonePe, Google Pay, or any UPI App.</p>
+          </div>
+
+          <form onsubmit="handleDepositSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Amount (Minimum ₹100)</label>
+              <input type="number" min="100" id="deposit-amount" required placeholder="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">UTR / Transaction ID / Reference No.</label>
+              <input type="text" id="deposit-utr" required placeholder="Enter 12-digit UTR Number" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <p class="text-xs text-slate-400">Note: Payments will be instantly credited upon Admin Approval.</p>
+
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition">
+              Submit Payment for Approval
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW: API DOCS -->
+      <section id="view-api" class="space-y-4 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700 max-w-xl mx-auto">
+          <h2 class="text-lg font-bold mb-3 text-white">API Documentation</h2>
+          <p class="text-sm text-slate-400 mb-4">Integrate our SMM services directly into your own applications using our API.</p>
+          <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-2">
+            <span class="text-xs font-bold text-slate-400 uppercase">Your API Key</span>
+            <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded">
+              <code class="text-xs text-emerald-400 font-mono">msh_live_9f83bca7261902</code>
+              <button onclick="alert('API Key Copied!')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Copy</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: TICKETS -->
+      <section id="view-tickets" class="space-y-6 hidden">
+        <div class="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-700 max-w-xl mx-auto">
+          <h2 class="text-lg font-bold mb-4 text-white">Support Ticket</h2>
+          <form onsubmit="alert('Ticket Submitted successfully!'); this.reset(); event.preventDefault();" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Subject</label>
+              <input type="text" required placeholder="Order refill / Payment Issue" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
+              <textarea rows="4" required placeholder="Describe your issue in detail..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg text-sm">Submit Ticket</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW: ADMIN DASHBOARD -->
+      <section id="view-admin" class="space-y-6 hidden">
+        <div class="bg-purple-900/60 border border-purple-700 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+          <div>
+            <h2 class="text-2xl font-black">Admin Management Portal</h2>
+            <p class="text-xs text-purple-300">Approve payments, track user accounts & order logs</p>
+          </div>
+          <span class="bg-purple-700 text-xs px-3 py-1.5 rounded-full font-mono">Role: Super Admin</span>
+        </div>
+
+        <!-- PENDING PAYMENTS APPROVAL -->
+        <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-700">
+          <h3 class="font-bold text-white mb-3 flex items-center space-x-2">
+            <i data-lucide="clock" class="text-amber-400"></i>
+            <span>Pending Deposits (Requires Approval)</span>
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="bg-slate-900 text-slate-400">
+                  <th class="p-2 border border-slate-700">User ID</th>
+                  <th class="p-2 border border-slate-700">Amount</th>
+                  <th class="p-2 border border-slate-700">UTR Number</th>
+                  <th class="p-2 border border-slate-700">Time</th>
+                  <th class="p-2 border border-slate-700 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-pending-payments-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- USER REGISTRATION LIST -->
+        <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-700">
+          <h3 class="font-bold text-white mb-3 flex items-center space-x-2">
+            <i data-lucide="users" class="text-blue-400"></i>
+            <span>Registered Users</span>
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="bg-slate-900 text-slate-400">
+                  <th class="p-2 border border-slate-700">Username</th>
+                  <th class="p-2 border border-slate-700">Full Name</th>
+                  <th class="p-2 border border-slate-700">Balance</th>
+                  <th class="p-2 border border-slate-700">Joined</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // SECURE SHA-256 HASHES FOR ADMIN CREDENTIALS (No plaintext exposure)
+    const ADMIN_ID_HASH = "ca20ecdd34d7d1302fb06bb3d5966a4f91e92d7747805ef9647ce569bcba238e";
+    const ADMIN_PASS_HASH = "cf1bfad42e8e3d0faed898df5b3ef2e9fa65011681a9cd2dc0e5cd24bd6bbfe9";
+
+    const SERVICES = [
+      { id: 2458, cat: 'tg-members', name: 'Telegram Members | 10k Per day | 90 day Non Drop', rate: 36.08, min: 100, max: 220000 },
+      { id: 326, cat: 'tg-members', name: 'Telegram Members | 20k Per day | 90 day Non Drop', rate: 54.12, min: 100, max: 500000 },
+      { id: 762, cat: 'tg-members', name: 'Telegram Members | 30k Per day | 30 day Non Drop HQ', rate: 22.79, min: 500, max: 100000 },
+      { id: 1627, cat: 'tg-premium', name: 'Telegram Premium Members | 7-10 Days Non Drop', rate: 512.77, min: 500, max: 20000 },
+      { id: 1622, cat: 'tg-premium', name: 'Telegram Premium Members | 14 Days Non Drop', rate: 1291.44, min: 100, max: 30000 },
+      { id: 419, cat: 'tg-views', name: 'Telegram 1 Post Views | Fast Speed', rate: 0.19, min: 10, max: 100000 }
+    ];
+
+    let currentUser = null;
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initStorage();
+      checkAuthSession();
+    });
+
+    function initStorage() {
+      if (!localStorage.getItem('msh_users')) localStorage.setItem('msh_users', JSON.stringify([]));
+      if (!localStorage.getItem('msh_deposits')) localStorage.setItem('msh_deposits', JSON.stringify([]));
+      if (!localStorage.getItem('msh_orders')) localStorage.setItem('msh_orders', JSON.stringify([]));
+    }
+
+    function checkAuthSession() {
+      const session = JSON.parse(sessionStorage.getItem('msh_session'));
+      if (session) {
+        currentUser = session;
+        document.getElementById('view-auth').classList.add('hidden');
+        document.getElementById('app-sidebar').classList.remove('hidden');
+        document.getElementById('user-header-info').classList.remove('hidden');
+        
+        if (currentUser.isAdmin) {
+          document.getElementById('admin-nav-container').classList.remove('hidden');
+        } else {
+          document.getElementById('admin-nav-container').classList.add('hidden');
+        }
+
+        refreshUserBalance();
+        navigate('new-order');
+      } else {
+        document.getElementById('view-auth').classList.remove('hidden');
+        document.getElementById('app-sidebar').classList.add('hidden');
+        document.getElementById('user-header-info').classList.add('hidden');
+        hideAllViews();
+      }
+    }
+
+    function switchAuthTab(tab) {
+      if (tab === 'signin') {
+        document.getElementById('form-signin').classList.remove('hidden');
+        document.getElementById('form-signup').classList.add('hidden');
+        document.getElementById('tab-signin').className = "flex-1 py-2 font-semibold text-center border-b-2 border-blue-500 text-blue-400";
+        document.getElementById('tab-signup').className = "flex-1 py-2 font-semibold text-center text-slate-400 border-b-2 border-transparent";
+      } else {
+        document.getElementById('form-signin').classList.add('hidden');
+        document.getElementById('form-signup').classList.remove('hidden');
+        document.getElementById('tab-signup').className = "flex-1 py-2 font-semibold text-center border-b-2 border-blue-500 text-blue-400";
+        document.getElementById('tab-signin').className = "flex-1 py-2 font-semibold text-center text-slate-400 border-b-2 border-transparent";
+      }
+    }
+
+    async function handleSignIn(e) {
+      e.preventDefault();
+      const id = document.getElementById('signin-id').value.trim();
+      const pass = document.getElementById('signin-pass').value.trim();
+
+      const inputIdHash = await sha256(id);
+      const inputPassHash = await sha256(pass);
+
+      if (inputIdHash === ADMIN_ID_HASH && inputPassHash === ADMIN_PASS_HASH) {
+        currentUser = { id: id, name: "Super Admin", balance: 999999, isAdmin: true };
+        sessionStorage.setItem('msh_session', JSON.stringify(currentUser));
+        checkAuthSession();
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      const found = users.find(u => u.id === id && u.pass === pass);
+
+      if (found) {
+        currentUser = { ...found, isAdmin: false };
+        sessionStorage.setItem('msh_session', JSON.stringify(currentUser));
+        checkAuthSession();
+      } else {
+        alert("Invalid Username or Password!");
+      }
+    }
+
+    function handleSignUp(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value.trim();
+      const id = document.getElementById('signup-id').value.trim();
+      const pass = document.getElementById('signup-pass').value.trim();
+
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      if (users.some(u => u.id === id)) {
+        alert("User with this ID already exists!");
+        return;
+      }
+
+      const newUser = { id, name, pass, balance: 0, joined: new Date().toLocaleDateString() };
+      users.push(newUser);
+      localStorage.setItem('msh_users', JSON.stringify(users));
+
+      alert("Registration Successful! Please Sign In.");
+      switchAuthTab('signin');
+    }
+
+    function logout() {
+      sessionStorage.removeItem('msh_session');
+      currentUser = null;
+      checkAuthSession();
+    }
+
+    function navigate(view) {
+      hideAllViews();
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600/10', 'text-blue-400');
+        btn.classList.add('text-slate-300');
+      });
+
+      const activeNav = document.getElementById(`nav-${view}`);
+      if (activeNav) {
+        activeNav.classList.add('bg-blue-600/10', 'text-blue-400');
+      }
+
+      document.getElementById(`view-${view}`).classList.remove('hidden');
+
+      if (view === 'new-order') updateServicesDropdown();
+      if (view === 'services') renderServicesTable();
+      if (view === 'orders') renderOrdersTable();
+      if (view === 'admin') renderAdminDashboard();
+    }
+
+    function hideAllViews() {
+      const views = ['new-order', 'services', 'orders', 'add-funds', 'api', 'tickets', 'admin'];
+      views.forEach(v => document.getElementById(`view-${v}`)?.classList.add('hidden'));
+    }
+
+    function updateServicesDropdown() {
+      const category = document.getElementById('order-category').value;
+      const filtered = SERVICES.filter(s => s.cat === category);
+      const serviceSelect = document.getElementById('order-service');
+      
+      serviceSelect.innerHTML = filtered.map(s => `<option value="${s.id}">${s.name} - ₹${s.rate}/1k</option>`).join('');
+      calculateOrderCharge();
+    }
+
+    function calculateOrderCharge() {
+      const serviceId = parseInt(document.getElementById('order-service').value);
+      const qty = parseInt(document.getElementById('order-quantity').value) || 0;
+      const service = SERVICES.find(s => s.id === serviceId);
+
+      if (service) {
+        const total = (qty / 1000) * service.rate;
+        document.getElementById('order-charge').innerText = `₹${total.toFixed(2)}`;
+        document.getElementById('quantity-hint').innerText = `Min: ${service.min} - Max: ${service.max.toLocaleString()}`;
+      }
+    }
+
+    function refreshUserBalance() {
+      if (!currentUser || currentUser.isAdmin) return;
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      const fresh = users.find(u => u.id === currentUser.id);
+      if (fresh) {
+        currentUser.balance = fresh.balance;
+        document.getElementById('header-balance').innerText = `₹${fresh.balance.toFixed(2)}`;
+      }
+    }
+
+    function handlePlaceOrder(e) {
+      e.preventDefault();
+      const serviceId = parseInt(document.getElementById('order-service').value);
+      const link = document.getElementById('order-link').value;
+      const qty = parseInt(document.getElementById('order-quantity').value);
+      const service = SERVICES.find(s => s.id === serviceId);
+
+      const charge = (qty / 1000) * service.rate;
+
+      if (currentUser.balance < charge) {
+        alert("Insufficient Balance! Please Add Funds.");
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      const userIndex = users.findIndex(u => u.id === currentUser.id);
+      users[userIndex].balance -= charge;
+      localStorage.setItem('msh_users', JSON.stringify(users));
+
+      const orders = JSON.parse(localStorage.getItem('msh_orders'));
+      orders.unshift({
+        id: 'ORD' + Math.floor(100000 + Math.random() * 900000),
+        userId: currentUser.id,
+        service: service.name,
+        link,
+        qty,
+        charge,
+        status: 'Processing'
+      });
+      localStorage.setItem('msh_orders', JSON.stringify(orders));
+
+      alert("Order Placed Successfully!");
+      refreshUserBalance();
+      navigate('orders');
+    }
+
+    function handleDepositSubmit(e) {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('deposit-amount').value);
+      const utr = document.getElementById('deposit-utr').value.trim();
+
+      if (amount < 100) {
+        alert("Minimum deposit amount is ₹100!");
+        return;
+      }
+
+      const deposits = JSON.parse(localStorage.getItem('msh_deposits'));
+      deposits.push({
+        id: 'DEP' + Date.now(),
+        userId: currentUser.id,
+        amount,
+        utr,
+        time: new Date().toLocaleString(),
+        status: 'Pending'
+      });
+      localStorage.setItem('msh_deposits', JSON.stringify(deposits));
+
+      alert("Payment Details Submitted! Funds will be credited after Admin approval.");
+      e.target.reset();
+    }
+
+    function renderServicesTable() {
+      const tbody = document.getElementById('services-table-body');
+      tbody.innerHTML = SERVICES.map(s => `
+        <tr class="border-b border-slate-700">
+          <td class="p-2 font-mono">${s.id}</td>
+          <td class="p-2 font-medium">${s.name}</td>
+          <td class="p-2 text-emerald-400 font-bold">₹${s.rate}</td>
+          <td class="p-2">${s.min}</td>
+          <td class="p-2">${s.max.toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('orders-user-table-body');
+      const orders = JSON.parse(localStorage.getItem('msh_orders')).filter(o => o.userId === currentUser.id);
+
+      tbody.innerHTML = orders.length === 0 
+        ? `<tr><td colspan="6" class="p-4 text-center text-slate-500">No orders placed yet</td></tr>`
+        : orders.map(o => `
+        <tr class="border-b border-slate-700">
+          <td class="p-2 font-mono">${o.id}</td>
+          <td class="p-2">${o.service}</td>
+          <td class="p-2 text-blue-400 truncate max-w-[150px]">${o.link}</td>
+          <td class="p-2">${o.qty}</td>
+          <td class="p-2 font-bold">₹${o.charge.toFixed(2)}</td>
+          <td class="p-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full">${o.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminDashboard() {
+      const deposits = JSON.parse(localStorage.getItem('msh_deposits')).filter(d => d.status === 'Pending');
+      const depBody = document.getElementById('admin-pending-payments-body');
+
+      depBody.innerHTML = deposits.length === 0 
+        ? `<tr><td colspan="5" class="p-4 text-center text-slate-500">No pending approvals</td></tr>`
+        : deposits.map(d => `
+          <tr class="border-b border-slate-700">
+            <td class="p-2 font-bold">${d.userId}</td>
+            <td class="p-2 text-emerald-400 font-extrabold">₹${d.amount}</td>
+            <td class="p-2 font-mono">${d.utr}</td>
+            <td class="p-2 text-slate-400">${d.time}</td>
+            <td class="p-2 text-center">
+              <button onclick="approveDeposit('${d.id}')" class="bg-emerald-600 text-white text-xs px-3 py-1 rounded-md font-bold hover:bg-emerald-700">Approve</button>
+            </td>
+          </tr>
+        `).join('');
+
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      const userBody = document.getElementById('admin-users-table-body');
+      userBody.innerHTML = users.length === 0
+        ? `<tr><td colspan="4" class="p-4 text-center text-slate-500">No registered users yet</td></tr>`
+        : users.map(u => `
+        <tr class="border-b border-slate-700">
+          <td class="p-2 font-bold">${u.id}</td>
+          <td class="p-2">${u.name}</td>
+          <td class="p-2 text-emerald-400 font-bold">₹${u.balance.toFixed(2)}</td>
+          <td class="p-2 text-slate-400">${u.joined}</td>
+        </tr>
+      `).join('');
+    }
+
+    function approveDeposit(depId) {
+      const deposits = JSON.parse(localStorage.getItem('msh_deposits'));
+      const dep = deposits.find(d => d.id === depId);
+      if (!dep) return;
+
+      dep.status = 'Approved';
+      localStorage.setItem('msh_deposits', JSON.stringify(deposits));
+
+      const users = JSON.parse(localStorage.getItem('msh_users'));
+      const user = users.find(u => u.id === dep.userId);
+      if (user) {
+        user.balance += dep.amount;
+        localStorage.setItem('msh_users', JSON.stringify(users));
+      }
+
+      alert(`Approved ₹${dep.amount} for user ${dep.userId}`);
+      renderAdminDashboard();
+    }
+
+    function copyVpa() {
+      navigator.clipboard.writeText('BHARATPE2Y0G0R6C3V57831@unitype');
+      alert('VPA Copied to Clipboard!');
+    }
+  </script>
+</body>
+</html>
